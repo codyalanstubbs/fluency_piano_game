@@ -29,18 +29,25 @@ module = input("Please type the name of the practice module: ")
 # API backend defaults to ALSA on Linux.
 port = sys.argv[1] if len(sys.argv) > 1 else None
 
+
+# Opens a midi input port and assigns a midiin object and captures name of port
 midiin, port_name = open_midiinput(port)
 
+# Prompt for performing a hard exit
 print("Entering main loop. Press Control-C to exit.")
 
+# Starts time before any keys are pressed e.g.: beginning of practice session
 timer = time.time()
 
+# Create a dataframe to store pressed key data in locally
 df = pandas.DataFrame(columns = ['Date', 'Module', 'Hand', 'Time', 'Stroke', 'Key', 'Speed'])
 
+# Main loop for capturing pressed key data
 while True:
+    # Retrieves most recent midi input message
     msg = midiin.get_message()
     
-    if msg:
+    if msg: # Following creates variables and adds them to the dataframe
         message, deltatime = msg
         timer += deltatime
         date = datetime.datetime.now().date()
@@ -54,10 +61,14 @@ while True:
             'Speed' : message[2]
             },  
                 ignore_index = True)
-        
+
+        # Filters dataframe for beginning and end of key stroke AND foot pedal presses
         df = df[(df.Stroke == 144) | (df.Stroke == 128) | (df.Stroke == 177)]
+
+        # Removes the duplicate foot pedal speed data; foot pedal data can now be IDed as Stroke=177 and Soeed=0
         df = df[-((df.Stroke == 177) & (df.Speed == 127))]
 
+        # Write the data to the datastorace csv
         df.to_csv('piano_practice_data.csv', mode='w', header=True, index=True)
-
+        
         time.sleep(0.01)
