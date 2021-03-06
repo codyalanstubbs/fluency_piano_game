@@ -68,7 +68,10 @@ while True:
         # Removes the duplicate foot pedal speed data; foot pedal data can now be IDed as Stroke=177 and Soeed=0
         df = df[-((df.Stroke == 177) & (df.Speed == 127))]
 
+        # Create a unique csv name based on module and date
+        filename = date.strftime('%Y-%m-%d') + module + '.csv'
+        
         # Write the data to the datastorace csv
-        df.to_csv('piano_practice_data.csv', mode='w', header=True, index=True)
+        df.to_csv(filename, mode='w', header=True, index=True)
         
         time.sleep(0.01)
