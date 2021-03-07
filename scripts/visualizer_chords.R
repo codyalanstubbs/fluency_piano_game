@@ -138,7 +138,10 @@ display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
                                 data = visual_data %>% filter(key.color == "white"),
                                 aes(x = viz.x, y = viz.y),
                                 fill = "purple", color = "black",
-                                width = 1 )
+                                width = 1 ) + 
+                        ggtitle(chrd)+ theme(
+                                plot.title = element_text(hjust = 0.5)
+                        )
                 
                 # Rearrange the plot layers to optimize visibility
                 p_w_chord$layers <- c(
